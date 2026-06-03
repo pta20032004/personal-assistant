@@ -1,0 +1,27 @@
+node_modules/
+.next/
+out/
+dist/
+coverage/
+
+# Env
+.env
+.env.local
+.env.*.local
+
+# Prisma local DB
+prisma/*.db
+prisma/*.db-journal
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Misc
+*.log
+.vercel
+next-env.d.ts

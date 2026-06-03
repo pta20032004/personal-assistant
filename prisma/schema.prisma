@@ -1,0 +1,47 @@
+// Personal Assistant - single user, SQLite
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  name        String
+  status      String   @default("planned") // planned | in_progress | paused | completed
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  todos       Todo[]
+
+  @@index([status, updatedAt])
+}
+
+model Todo {
+  id        String   @id @default(cuid())
+  title     String
+  status    String   @default("not_started") // not_started | in_progress | done
+  projectId String?
+  project   Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([updatedAt])
+  @@index([projectId, updatedAt])
+}
+
+model Meeting {
+  id        String   @id @default(cuid())
+  title     String
+  startTime DateTime
+  endTime   DateTime
+  attendees String   @default("[]") // JSON-encoded string[]
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([startTime])
+}
