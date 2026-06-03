@@ -13,6 +13,9 @@ coverage/
 prisma/*.db
 prisma/*.db-journal
 
+# Kiro
+.kiro/
+
 # IDE
 .vscode/
 .idea/
