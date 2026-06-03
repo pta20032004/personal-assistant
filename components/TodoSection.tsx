@@ -3,9 +3,9 @@ import { useState, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 
 const STATUS_LABEL: Record<string, string> = {
-  not_started: 'Chưa làm',
-  in_progress: 'Đang làm',
-  done: 'Xong',
+  not_started: 'Not Started',
+  in_progress: 'In Progress',
+  done: 'Done',
 };
 
 interface Project {
@@ -66,17 +66,17 @@ export function TodoSection({ todos, projects = [], defaultProjectId = null, hid
   }
 
   async function remove(id: string) {
-    if (!confirm('Xóa việc này?')) return;
+    if (!confirm('Delete this todo?')) return;
     await fetch(`/api/todos/${id}`, { method: 'DELETE' });
     router.refresh();
   }
 
   return (
     <div className="card">
-      <h2>Việc cần làm</h2>
+      <h2>Todos</h2>
       <form onSubmit={add} className="form-row">
         <input
-          placeholder="Việc mới…"
+          placeholder="New todo…"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
@@ -86,7 +86,7 @@ export function TodoSection({ todos, projects = [], defaultProjectId = null, hid
             onChange={(e) => setProjectId(e.target.value)}
             style={{ flex: '0 0 160px' }}
           >
-            <option value="">— Không thuộc dự án —</option>
+            <option value="">— No Project —</option>
             {projects.map((p) => (
               <option key={p.id} value={p.id}>
                 {p.name}
@@ -95,11 +95,11 @@ export function TodoSection({ todos, projects = [], defaultProjectId = null, hid
           </select>
         )}
         <button className="btn" disabled={busy} style={{ flex: '0 0 auto' }}>
-          Thêm
+          Add
         </button>
       </form>
       {todos.length === 0 ? (
-        <p className="muted">Chưa có việc nào.</p>
+        <p className="muted">No todos yet.</p>
       ) : (
         <ul className="list">
           {todos.map((t) => (

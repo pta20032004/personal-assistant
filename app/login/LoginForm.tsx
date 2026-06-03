@@ -28,14 +28,14 @@ export function LoginForm() {
       }
       const body = (await res.json().catch(() => ({}))) as { error?: string };
       if (body.error === 'invalid_credentials') {
-        setError('Mật khẩu không đúng');
+        setError('Invalid password');
       } else if (res.status === 503) {
-        setError('Server chưa cấu hình OWNER_PASSWORD');
+        setError('Server not configured with OWNER_PASSWORD');
       } else {
-        setError('Đăng nhập thất bại');
+        setError('Login failed');
       }
     } catch {
-      setError('Không kết nối được server');
+      setError('Cannot connect to server');
     } finally {
       setSubmitting(false);
     }
@@ -45,18 +45,18 @@ export function LoginForm() {
     <div className="login-shell">
       <form className="login-card" onSubmit={onSubmit}>
         <h1>Personal Assistant</h1>
-        <p>Nhập mật khẩu để tiếp tục.</p>
+        <p>Enter password to continue.</p>
         <input
           type="password"
           autoFocus
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          placeholder="Mật khẩu"
+          placeholder="Password"
         />
         {error && <div className="error">{error}</div>}
         <div style={{ marginTop: 14 }}>
           <button className="btn" type="submit" disabled={submitting} style={{ width: '100%' }}>
-            {submitting ? 'Đang đăng nhập…' : 'Đăng nhập'}
+            {submitting ? 'Logging in…' : 'Log in'}
           </button>
         </div>
       </form>

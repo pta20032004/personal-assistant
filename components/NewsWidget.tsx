@@ -8,7 +8,7 @@ interface NewsItem {
   url: string;
   publishedAt: string;
   language: 'vi' | 'en';
-  category: 'politics' | 'policy';
+  category: 'politics' | 'policy' | 'international' | 'us-politics' | 'tech-policy' | 'tech-news' | 'ai' | 'law' | 'tech-deals' | 'startups';
 }
 interface Result {
   items: NewsItem[];
@@ -25,12 +25,17 @@ const dtf = new Intl.DateTimeFormat('vi-VN', {
 
 export function NewsWidget() {
   const [data, setData] = useState<Result | null>(null);
+  const [keyword, setKeyword] = useState('');
+  const [searchKeyword, setSearchKeyword] = useState('');
 
   useEffect(() => {
     let alive = true;
     async function load() {
       try {
-        const res = await fetch('/api/news');
+        const url = searchKeyword 
+          ? `/api/news?q=${encodeURIComponent(searchKeyword)}`
+          : '/api/news';
+        const res = await fetch(url);
         const j = (await res.json()) as Result;
         if (alive) setData(j);
       } catch {
@@ -43,18 +48,51 @@ export function NewsWidget() {
       alive = false;
       clearInterval(t);
     };
-  }, []);
+  }, [searchKeyword]);
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    setSearchKeyword(keyword.trim());
+  };
+
+  const handleReset = () => {
+    setKeyword('');
+    setSearchKeyword('');
+  };
 
   return (
     <div className="card">
       <h2>
-        Tin tức 24h{' '}
-        {data?.stale && <span className="badge warn">Có thể cũ</span>}
+        News 24h{' '}
+        {data?.stale && <span className="badge warn">May be stale</span>}
       </h2>
+      
+      <form onSubmit={handleSearch} style={{ marginBottom: 16, display: 'flex', gap: 8 }}>
+        <input
+          type="text"
+          value={keyword}
+          onChange={(e) => setKeyword(e.target.value)}
+          placeholder="Search news..."
+          style={{ flex: 1 }}
+        />
+        <button type="submit">Search</button>
+        {searchKeyword && (
+          <button type="button" onClick={handleReset}>
+            Reset
+          </button>
+        )}
+      </form>
+
+      {searchKeyword && (
+        <p className="muted" style={{ marginBottom: 8, fontSize: 13 }}>
+          Results for: <strong>{searchKeyword}</strong>
+        </p>
+      )}
+
       {!data ? (
-        <p className="muted">Đang tải…</p>
+        <p className="muted">Loading…</p>
       ) : data.items.length === 0 ? (
-        <p className="muted">Chưa có tin trong 24h qua.</p>
+        <p className="muted">No news in the last 24 hours.</p>
       ) : (
         <ul className="list" style={{ maxHeight: 360, overflow: 'auto' }}>
           {data.items.map((it) => (

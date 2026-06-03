@@ -34,7 +34,7 @@ export function ProjectStatusEditor({ id, status }: { id: string; status: string
       <button
         className="btn danger small"
         onClick={async () => {
-          if (!confirm('Xóa dự án này? Việc trong dự án sẽ được giữ và bỏ liên kết dự án.')) return;
+          if (!confirm('Delete this project? Todos in this project will be kept and unlinked.')) return;
           const res = await fetch(`/api/projects/${id}`, { method: 'DELETE' });
           if (res.ok) {
             router.replace('/projects');
@@ -43,7 +43,7 @@ export function ProjectStatusEditor({ id, status }: { id: string; status: string
         }}
         style={{ marginLeft: 'auto' }}
       >
-        Xóa dự án
+        Delete Project
       </button>
     </div>
   );

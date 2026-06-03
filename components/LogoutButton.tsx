@@ -20,7 +20,7 @@ export function LogoutButton() {
         }
       }}
     >
-      Đăng xuất
+      Log out
     </button>
   );
 }

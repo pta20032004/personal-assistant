@@ -18,7 +18,7 @@ export default async function ProjectDetailPage({ params }: Props) {
   return (
     <div>
       <p className="muted">
-        <Link href="/projects">← Tất cả dự án</Link>
+        <Link href="/projects">← All Projects</Link>
       </p>
       <div className="card" style={{ marginBottom: 16 }}>
         <h3 style={{ fontSize: 18 }}>{project.name}</h3>

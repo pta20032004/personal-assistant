@@ -9,7 +9,7 @@ export interface NewsItem {
   url: string;
   publishedAt: Date;
   language: 'vi' | 'en';
-  category: 'politics' | 'policy';
+  category: 'politics' | 'policy' | 'international' | 'us-politics' | 'tech-policy' | 'tech-news' | 'ai' | 'law' | 'tech-deals' | 'startups';
 }
 
 export interface NewsResult {
@@ -20,22 +20,63 @@ export interface NewsResult {
 interface Query {
   q: string;
   language: 'vi' | 'en';
-  category: 'politics' | 'policy';
+  category: 'politics' | 'policy' | 'international' | 'us-politics' | 'tech-policy' | 'tech-news' | 'ai' | 'law' | 'tech-deals' | 'startups';
   hl: string;
   gl: string;
   ceid: string;
 }
 
 const QUERIES: Query[] = [
+  // Chính trị Việt Nam
   { q: 'chính trị Việt Nam', language: 'vi', category: 'politics', hl: 'vi', gl: 'VN', ceid: 'VN:vi' },
   { q: 'chính sách Việt Nam', language: 'vi', category: 'policy', hl: 'vi', gl: 'VN', ceid: 'VN:vi' },
   { q: 'Vietnam politics', language: 'en', category: 'politics', hl: 'en', gl: 'US', ceid: 'US:en' },
   { q: 'Vietnam policy', language: 'en', category: 'policy', hl: 'en', gl: 'US', ceid: 'US:en' },
+  
+  // Chính trị quốc tế
+  { q: 'chính trị quốc tế', language: 'vi', category: 'international', hl: 'vi', gl: 'VN', ceid: 'VN:vi' },
+  { q: 'international politics', language: 'en', category: 'international', hl: 'en', gl: 'US', ceid: 'US:en' },
+  { q: 'world politics', language: 'en', category: 'international', hl: 'en', gl: 'US', ceid: 'US:en' },
+  
+  // Chính trị Mỹ
+  { q: 'chính trị Mỹ', language: 'vi', category: 'us-politics', hl: 'vi', gl: 'VN', ceid: 'VN:vi' },
+  { q: 'US politics', language: 'en', category: 'us-politics', hl: 'en', gl: 'US', ceid: 'US:en' },
+  { q: 'American politics', language: 'en', category: 'us-politics', hl: 'en', gl: 'US', ceid: 'US:en' },
+  
+  // Chính sách công nghệ
+  { q: 'chính sách công nghệ', language: 'vi', category: 'tech-policy', hl: 'vi', gl: 'VN', ceid: 'VN:vi' },
+  { q: 'tech policy', language: 'en', category: 'tech-policy', hl: 'en', gl: 'US', ceid: 'US:en' },
+  { q: 'technology regulation', language: 'en', category: 'tech-policy', hl: 'en', gl: 'US', ceid: 'US:en' },
+  
+  // Tin tức công nghệ
+  { q: 'công nghệ mới', language: 'vi', category: 'tech-news', hl: 'vi', gl: 'VN', ceid: 'VN:vi' },
+  { q: 'technology news', language: 'en', category: 'tech-news', hl: 'en', gl: 'US', ceid: 'US:en' },
+  { q: 'tech news', language: 'en', category: 'tech-news', hl: 'en', gl: 'US', ceid: 'US:en' },
+  
+  // AI
+  { q: 'trí tuệ nhân tạo', language: 'vi', category: 'ai', hl: 'vi', gl: 'VN', ceid: 'VN:vi' },
+  { q: 'AI news', language: 'en', category: 'ai', hl: 'en', gl: 'US', ceid: 'US:en' },
+  { q: 'artificial intelligence', language: 'en', category: 'ai', hl: 'en', gl: 'US', ceid: 'US:en' },
+  
+  // Luật pháp
+  { q: 'luật mới Việt Nam', language: 'vi', category: 'law', hl: 'vi', gl: 'VN', ceid: 'VN:vi' },
+  { q: 'new laws Vietnam', language: 'en', category: 'law', hl: 'en', gl: 'US', ceid: 'US:en' },
+  { q: 'legal updates', language: 'en', category: 'law', hl: 'en', gl: 'US', ceid: 'US:en' },
+  
+  // Khuyến mại công nghệ
+  { q: 'khuyến mại công nghệ', language: 'vi', category: 'tech-deals', hl: 'vi', gl: 'VN', ceid: 'VN:vi' },
+  { q: 'tech deals', language: 'en', category: 'tech-deals', hl: 'en', gl: 'US', ceid: 'US:en' },
+  { q: 'technology promotions', language: 'en', category: 'tech-deals', hl: 'en', gl: 'US', ceid: 'US:en' },
+  
+  // Startup thành công
+  { q: 'startup thành công', language: 'vi', category: 'startups', hl: 'vi', gl: 'VN', ceid: 'VN:vi' },
+  { q: 'successful startups', language: 'en', category: 'startups', hl: 'en', gl: 'US', ceid: 'US:en' },
+  { q: 'startup success stories', language: 'en', category: 'startups', hl: 'en', gl: 'US', ceid: 'US:en' },
 ];
 
 const CACHE_TTL_MS = 10 * 60_000;
 const WINDOW_MS = 24 * 60 * 60_000;
-const MAX_ITEMS = 20;
+const MAX_ITEMS = 50;
 
 let cached: { result: NewsResult; fetchedAt: number } | null = null;
 
@@ -86,15 +127,25 @@ async function fetchOne(q: Query, signal: AbortSignal): Promise<NewsItem[]> {
   return items;
 }
 
-export async function getRecentNews(now: Date = new Date()): Promise<NewsResult> {
-  if (cached && now.getTime() - cached.fetchedAt < CACHE_TTL_MS) {
+export async function getRecentNews(now: Date = new Date(), customKeyword?: string): Promise<NewsResult> {
+  if (cached && now.getTime() - cached.fetchedAt < CACHE_TTL_MS && !customKeyword) {
     return { items: cached.result.items, stale: false };
   }
 
   const ac = new AbortController();
   const timer = setTimeout(() => ac.abort(), 8000);
   try {
-    const settled = await Promise.allSettled(QUERIES.map((q) => fetchOne(q, ac.signal)));
+    let queriesToFetch = QUERIES;
+    
+    // Nếu có từ khóa custom, chỉ search từ khóa đó
+    if (customKeyword && customKeyword.trim()) {
+      queriesToFetch = [
+        { q: customKeyword, language: 'vi', category: 'politics', hl: 'vi', gl: 'VN', ceid: 'VN:vi' },
+        { q: customKeyword, language: 'en', category: 'politics', hl: 'en', gl: 'US', ceid: 'US:en' },
+      ];
+    }
+    
+    const settled = await Promise.allSettled(queriesToFetch.map((q) => fetchOne(q, ac.signal)));
     const all: NewsItem[] = [];
     for (const r of settled) {
       if (r.status === 'fulfilled') all.push(...r.value);
@@ -102,7 +153,7 @@ export async function getRecentNews(now: Date = new Date()): Promise<NewsResult>
 
     if (all.length === 0 && settled.every((r) => r.status === 'rejected')) {
       // Toàn bộ upstream lỗi -> dùng cache nếu có.
-      if (cached) return { items: cached.result.items, stale: true };
+      if (cached && !customKeyword) return { items: cached.result.items, stale: true };
       return { items: [], stale: false };
     }
 
@@ -123,11 +174,16 @@ export async function getRecentNews(now: Date = new Date()): Promise<NewsResult>
     const items = sorted.slice(0, MAX_ITEMS);
 
     const result: NewsResult = { items, stale: false };
-    cached = { result, fetchedAt: now.getTime() };
+    
+    // Chỉ cache khi không có custom keyword
+    if (!customKeyword) {
+      cached = { result, fetchedAt: now.getTime() };
+    }
+    
     return result;
   } catch (err) {
     console.warn('[news] fetch failed:', (err as Error).message);
-    if (cached) return { items: cached.result.items, stale: true };
+    if (cached && !customKeyword) return { items: cached.result.items, stale: true };
     return { items: [], stale: false };
   } finally {
     clearTimeout(timer);

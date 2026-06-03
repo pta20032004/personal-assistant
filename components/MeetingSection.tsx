@@ -11,7 +11,7 @@ export interface MeetingRow {
   notes: string | null;
 }
 
-const dtfDate = new Intl.DateTimeFormat('vi-VN', {
+const dtfDate = new Intl.DateTimeFormat('en-US', {
   timeZone: 'Asia/Ho_Chi_Minh',
   dateStyle: 'short',
   timeStyle: 'short',
@@ -46,7 +46,7 @@ export function MeetingSection({ meetings }: { meetings: MeetingRow[] }) {
     e.preventDefault();
     setError(null);
     if (!title.trim()) {
-      setError('Cần nhập tiêu đề');
+      setError('Title is required');
       return;
     }
     setBusy(true);
@@ -70,7 +70,7 @@ export function MeetingSection({ meetings }: { meetings: MeetingRow[] }) {
         setAttendeesText('');
         router.refresh();
       } else {
-        setError('Không tạo được cuộc họp (kiểm tra thời gian)');
+        setError('Failed to create meeting (check time)');
       }
     } finally {
       setBusy(false);
@@ -78,18 +78,18 @@ export function MeetingSection({ meetings }: { meetings: MeetingRow[] }) {
   }
 
   async function remove(id: string) {
-    if (!confirm('Xóa cuộc họp này?')) return;
+    if (!confirm('Delete this meeting?')) return;
     await fetch(`/api/meetings/${id}`, { method: 'DELETE' });
     router.refresh();
   }
 
   return (
     <div className="card">
-      <h2>Cuộc họp sắp tới</h2>
+      <h2>Upcoming Meetings</h2>
       <form onSubmit={add} style={{ marginBottom: 8 }}>
         <div className="form-row">
           <input
-            placeholder="Tiêu đề"
+            placeholder="Title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
           />
@@ -100,18 +100,18 @@ export function MeetingSection({ meetings }: { meetings: MeetingRow[] }) {
         </div>
         <div className="form-row">
           <input
-            placeholder="Người tham dự (cách nhau dấu phẩy)"
+            placeholder="Attendees (comma separated)"
             value={attendeesText}
             onChange={(e) => setAttendeesText(e.target.value)}
           />
           <button className="btn" disabled={busy} style={{ flex: '0 0 auto' }}>
-            Thêm
+            Add
           </button>
         </div>
         {error && <div className="error">{error}</div>}
       </form>
       {meetings.length === 0 ? (
-        <p className="muted">Không có cuộc họp nào.</p>
+        <p className="muted">No meetings scheduled.</p>
       ) : (
         <ul className="list">
           {meetings.map((m) => (
@@ -127,7 +127,7 @@ export function MeetingSection({ meetings }: { meetings: MeetingRow[] }) {
               </div>
               {m.attendees.length > 0 && (
                 <div className="muted" style={{ fontSize: 12 }}>
-                  Tham dự: {m.attendees.join(', ')}
+                  Attendees: {m.attendees.join(', ')}
                 </div>
               )}
             </li>

@@ -10,7 +10,7 @@ export default function ProtectedLayout({ children }: { children: ReactNode }) {
           <h1>Personal Assistant</h1>
           <nav style={{ marginLeft: 16 }}>
             <Link href="/dashboard">Dashboard</Link>
-            <Link href="/projects">Dự án</Link>
+            <Link href="/projects">Projects</Link>
           </nav>
         </div>
         <LogoutButton />

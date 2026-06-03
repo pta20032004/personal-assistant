@@ -39,16 +39,16 @@ export function HpgWidget() {
   if (!data) {
     return (
       <div className="card">
-        <h2>Cổ phiếu HPG</h2>
-        <p className="muted">Đang tải…</p>
+        <h2>HPG Stock</h2>
+        <p className="muted">Loading…</p>
       </div>
     );
   }
   if (!data.ok) {
     return (
       <div className="card">
-        <h2>Cổ phiếu HPG</h2>
-        <p className="muted">Hiện không lấy được giá.</p>
+        <h2>HPG Stock</h2>
+        <p className="muted">No price data available.</p>
       </div>
     );
   }
@@ -56,19 +56,19 @@ export function HpgWidget() {
   const up = quote.change >= 0;
   return (
     <div className="card">
-      <h2>Cổ phiếu HPG</h2>
+      <h2>HPG Stock</h2>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
         <div style={{ fontSize: 28, fontWeight: 700 }}>
-          {(quote.price * 1000).toLocaleString('vi-VN')} ₫
+          {(quote.price * 1000).toLocaleString('en-US')} ₫
         </div>
         <span className={`badge ${up ? 'up' : 'down'}`}>
-          {up ? '▲' : '▼'} {(Math.abs(quote.change) * 1000).toLocaleString('vi-VN')} ₫ (
+          {up ? '▲' : '▼'} {(Math.abs(quote.change) * 1000).toLocaleString('en-US')} ₫ (
           {quote.changePercent.toFixed(2)}%)
         </span>
       </div>
       <div className="muted" style={{ marginTop: 6 }}>
-        Khối lượng: {quote.volume.toLocaleString('vi-VN')} · Nguồn: {quote.source}
-        {stale && <span className="badge warn" style={{ marginLeft: 8 }}>Có thể cũ</span>}
+        Volume: {quote.volume.toLocaleString('en-US')} · Source: {quote.source}
+        {stale && <span className="badge warn" style={{ marginLeft: 8 }}>May be stale</span>}
       </div>
     </div>
   );
