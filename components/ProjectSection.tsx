@@ -88,6 +88,12 @@ export function ProjectSection({
     return todos.filter((t) => t.projectId === projectId);
   }
 
+  async function remove(id: string, name: string) {
+    if (!confirm(`Delete project "${name}"? Todos will be kept and unlinked.`)) return;
+    await fetch(`/api/projects/${id}`, { method: 'DELETE' });
+    router.refresh();
+  }
+
   return (
     <div className="card">
       <h2>Projects</h2>
@@ -146,6 +152,12 @@ export function ProjectSection({
                       </option>
                     ))}
                   </select>
+                  <button
+                    className="btn danger small"
+                    onClick={() => remove(p.id, p.name)}
+                  >
+                    ×
+                  </button>
                 </div>
 
                 {isExpanded && hasTodos && (

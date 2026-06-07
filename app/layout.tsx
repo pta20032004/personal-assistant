@@ -4,12 +4,15 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: 'Personal Assistant',
-  description: 'Trợ lý cá nhân',
+  description: 'Your personal command center for productivity',
+  icons: {
+    icon: '/favicon.svg',
+  },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="vi">
+    <html lang="en">
       <body>{children}</body>
     </html>
   );

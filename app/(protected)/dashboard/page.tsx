@@ -7,6 +7,7 @@ import { ProjectSection } from '@/components/ProjectSection';
 import { HpgWidget } from '@/components/HpgWidget';
 import { NewsWidget } from '@/components/NewsWidget';
 import { WeatherWidget } from '@/components/WeatherWidget';
+import { NotepadSection } from '@/components/NotepadSection';
 
 export const dynamic = 'force-dynamic';
 
@@ -45,6 +46,7 @@ export default async function DashboardPage() {
           }))}
           projects={projects.map((p) => ({ id: p.id, name: p.name }))}
         />
+        <NotepadSection />
       </div>
 
       {/* Right side: FIXED 1/3 width - Other widgets stacked */}
